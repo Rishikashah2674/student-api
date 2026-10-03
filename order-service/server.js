@@ -176,7 +176,7 @@ const startServer = async () => {
     await mongoose.connect(MONGODB_URI);
     console.log("Order Service connected to MongoDB!");
 
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Order Service running on port ${PORT}`);
     });
   } catch (error) {

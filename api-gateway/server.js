@@ -86,9 +86,9 @@ app.use((req, res) => {
 });
 
 // Start Gateway server
-app.listen(config.port, () => {
+app.listen(config.port, "0.0.0.0", () => {
   console.log(`==================================================`);
-  console.log(`🚀 API Gateway running on http://localhost:${config.port}`);
+  console.log(`🚀 API Gateway running on http://0.0.0.0:${config.port}`);
   console.log(`📍 User Service Route    -> ${config.services.user.path} -> ${config.services.user.url}`);
   console.log(`📍 Product Service Route -> ${config.services.product.path} -> ${config.services.product.url}`);
   console.log(`📍 Order Service Route   -> ${config.services.order.path} -> ${config.services.order.url}`);
