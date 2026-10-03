@@ -1,0 +1,280 @@
+{
+  "info": {
+    "_postman_id": "lab7-api-gateway-collection",
+    "name": "Lab 7 - API Gateway & Microservices",
+    "description": "Postman Collection for testing all microservice routes exclusively through the central API Gateway (http://localhost:3000).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Gateway Health Check (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["health"]
+        },
+        "description": "Verifies that the API Gateway is running and healthy."
+      }
+    },
+    {
+      "name": "1. Gateway -> User Service: Create User (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"_id\": 101,\n  \"name\": \"Alice Smith\",\n  \"email\": \"alice@campus.edu\",\n  \"role\": \"student\",\n  \"department\": \"Computer Science\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Routes POST /users through Gateway to User Service."
+      }
+    },
+    {
+      "name": "2. Gateway -> User Service: Get All Users (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Routes GET /users through Gateway to User Service."
+      }
+    },
+    {
+      "name": "3. Gateway -> User Service: Get User by ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users/101",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "101"]
+        },
+        "description": "Routes GET /users/101 through Gateway to User Service."
+      }
+    },
+    {
+      "name": "4. Gateway -> User Service: Update User (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice Smith Updated\",\n  \"email\": \"alice@campus.edu\",\n  \"role\": \"senior_student\",\n  \"department\": \"Software Engineering\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/users/101",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "101"]
+        },
+        "description": "Routes PUT /users/101 through Gateway to User Service."
+      }
+    },
+    {
+      "name": "5. Gateway -> User Service: Delete User (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users/101",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users", "101"]
+        },
+        "description": "Routes DELETE /users/101 through Gateway to User Service."
+      }
+    },
+    {
+      "name": "6. Gateway -> Product Service: Create Product (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"_id\": 501,\n  \"name\": \"Campus Hoodie\",\n  \"price\": 45.00,\n  \"category\": \"Apparel\",\n  \"stock\": 150\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["products"]
+        },
+        "description": "Routes POST /products through Gateway to Product Service."
+      }
+    },
+    {
+      "name": "7. Gateway -> Product Service: Get All Products (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["products"]
+        },
+        "description": "Routes GET /products through Gateway to Product Service."
+      }
+    },
+    {
+      "name": "8. Gateway -> Product Service: Get Product by ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/501",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["products", "501"]
+        },
+        "description": "Routes GET /products/501 through Gateway to Product Service."
+      }
+    },
+    {
+      "name": "9. Gateway -> Product Service: Update Product (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Campus Hoodie Deluxe\",\n  \"price\": 50.00,\n  \"category\": \"Apparel\",\n  \"stock\": 200\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/products/501",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["products", "501"]
+        },
+        "description": "Routes PUT /products/501 through Gateway to Product Service."
+      }
+    },
+    {
+      "name": "10. Gateway -> Product Service: Delete Product (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/products/501",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["products", "501"]
+        },
+        "description": "Routes DELETE /products/501 through Gateway to Product Service."
+      }
+    },
+    {
+      "name": "11. Gateway -> Order Service: Create Order (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["orders"]
+        },
+        "description": "Routes POST /orders through Gateway to Order Service."
+      }
+    },
+    {
+      "name": "12. Gateway -> Order Service: Get All Orders (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["orders"]
+        },
+        "description": "Routes GET /orders through Gateway to Order Service."
+      }
+    },
+    {
+      "name": "13. Gateway -> Order Service: Get Order by ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/orders/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["orders", "1"]
+        },
+        "description": "Routes GET /orders/:id through Gateway to Order Service."
+      }
+    },
+    {
+      "name": "14. Gateway Error Test: Unreachable Service (503)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["users"]
+        },
+        "description": "Call when User Service is stopped (`docker stop user-service`). Expects clean Gateway 503 response."
+      }
+    }
+  ]
+}

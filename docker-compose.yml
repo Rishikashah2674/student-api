@@ -1,0 +1,98 @@
+services:
+  # API Gateway (Only service with public host port mapping)
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      ORDER_SERVICE_URL: http://order-service:3003
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - campus-network
+
+  # User Database & Service (Internal only)
+  user-db:
+    image: mongo:latest
+    container_name: user-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - user-mongo-data:/data/db
+    networks:
+      - campus-network
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    environment:
+      PORT: 3001
+      MONGODB_URI: mongodb://user-db:27017/user_db
+    depends_on:
+      - user-db
+    networks:
+      - campus-network
+
+  # Product Database & Service (Internal only)
+  product-db:
+    image: mongo:latest
+    container_name: product-db
+    ports:
+      - "27018:27017"
+    volumes:
+      - product-mongo-data:/data/db
+    networks:
+      - campus-network
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    environment:
+      PORT: 3002
+      MONGODB_URI: mongodb://product-db:27017/product_db
+    depends_on:
+      - product-db
+    networks:
+      - campus-network
+
+  # Order Database & Service (Internal only)
+  order-db:
+    image: mongo:latest
+    container_name: order-db
+    ports:
+      - "27019:27017"
+    volumes:
+      - order-mongo-data:/data/db
+    networks:
+      - campus-network
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    environment:
+      PORT: 3003
+      MONGODB_URI: mongodb://order-db:27017/order_db
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+    depends_on:
+      - order-db
+      - user-service
+      - product-service
+    networks:
+      - campus-network
+
+networks:
+  campus-network:
+    name: campus-network
+    driver: bridge
+
+volumes:
+  user-mongo-data:
+  product-mongo-data:
+  order-mongo-data:

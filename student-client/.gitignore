@@ -1,0 +1,19 @@
+node_modules/
+.env
+.DS_Store
+*.log
+
+# IDE files
+.idea/
+**/.idea/
+
+# Android generated files
+.gradle/
+**/.gradle/
+android-student-client/build/
+android-student-client/app/build/
+android-student-client/local.properties
+
+# Frontend build output
+dist/
+**/dist/

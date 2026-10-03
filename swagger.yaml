@@ -1,0 +1,191 @@
+openapi: 3.0.0
+
+info:
+  title: Student Management REST API
+  description: RESTful Web Service for managing students
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+
+  /students:
+    get:
+      summary: Get all students
+      description: Returns a list of all students
+      responses:
+        '200':
+          description: Students retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '500':
+          description: Internal Server Error
+
+    post:
+      summary: Create a student
+      description: Creates a new student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '201':
+          description: Student created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad Request - Invalid student data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /students/{id}:
+
+    get:
+      summary: Get student by ID
+      description: Returns a single student by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Student ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Student retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update student
+      description: Updates an existing student
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Student ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentInput'
+      responses:
+        '200':
+          description: Student updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Bad Request - Invalid student data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete student
+      description: Deletes an existing student
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Student ID
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Student deleted successfully
+        '404':
+          description: Student not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+
+  schemas:
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Aarav Patel
+        email:
+          type: string
+          format: email
+          example: aarav@example.com
+        course:
+          type: string
+          example: Computer Science
+        semester:
+          type: integer
+          example: 5
+      required:
+        - id
+        - name
+        - email
+        - course
+        - semester
+
+    StudentInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Meera Patel
+        email:
+          type: string
+          format: email
+          example: meera@example.com
+        course:
+          type: string
+          example: Computer Science
+        semester:
+          type: integer
+          example: 6
+      required:
+        - name
+        - email
+        - course
+        - semester
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Student not found

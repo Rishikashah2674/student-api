@@ -1,0 +1,229 @@
+{
+  "info": {
+    "_postman_id": "c6a819b2-3f11-4e78-98f5-lab6microservices",
+    "name": "Microservices – Lab 6",
+    "description": "Postman collection for Lab 6 - CampusConnect Microservices Architecture (User Service :3001, Product Service :3002, Order Service :3003).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. User Service - Create User (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"_id\": 101,\n  \"name\": \"Alice Smith\",\n  \"email\": \"alice@campus.edu\",\n  \"role\": \"student\",\n  \"department\": \"Computer Science\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3001/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["users"]
+        },
+        "description": "Creates a user with explicit ID 101 in User Service."
+      }
+    },
+    {
+      "name": "2. User Service - Get All Users (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["users"]
+        },
+        "description": "Retrieves all users from User Service."
+      }
+    },
+    {
+      "name": "3. User Service - Get User by ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/users/101",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3001",
+          "path": ["users", "101"]
+        },
+        "description": "Retrieves user with ID 101."
+      }
+    },
+    {
+      "name": "4. Product Service - Create Product (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"_id\": 501,\n  \"name\": \"Campus Hoodie\",\n  \"price\": 45.00,\n  \"category\": \"Apparel\",\n  \"stock\": 150\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3002/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["products"]
+        },
+        "description": "Creates a product with explicit ID 501 in Product Service."
+      }
+    },
+    {
+      "name": "5. Product Service - Get All Products (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["products"]
+        },
+        "description": "Retrieves all products from Product Service."
+      }
+    },
+    {
+      "name": "6. Product Service - Get Product by ID (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/products/501",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3002",
+          "path": ["products", "501"]
+        },
+        "description": "Retrieves product with ID 501."
+      }
+    },
+    {
+      "name": "7. Order Service - Create Order (POST Success - 201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 2\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        },
+        "description": "Creates an order. Order Service validates User 101 via User Service API and Product 501 via Product Service API."
+      }
+    },
+    {
+      "name": "8. Order Service - Get All Orders (GET)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        },
+        "description": "Retrieves all orders from Order Service."
+      }
+    },
+    {
+      "name": "9. Order Service - Invalid User ID (POST - 404)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 99999,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        },
+        "description": "Tries creating an order with non-existent userId 99999. Expects 404 Not Found."
+      }
+    },
+    {
+      "name": "10. Order Service - Invalid Product ID (POST - 404)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 99999,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        },
+        "description": "Tries creating an order with non-existent productId 99999. Expects 404 Not Found."
+      }
+    },
+    {
+      "name": "11. Order Service - Dependency Down (POST - 503)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 101,\n  \"productId\": 501,\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3003",
+          "path": ["orders"]
+        },
+        "description": "Test after stopping user-service (`docker stop user-service`). Expects 503 Service Unavailable."
+      }
+    }
+  ]
+}

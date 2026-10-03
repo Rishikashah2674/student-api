@@ -1,0 +1,31 @@
+# Dependencies & Node
+node_modules/
+**/node_modules/
+
+# Environment & Secrets
+.env
+**/.env
+.DS_Store
+*.log
+logs/
+
+# IDE & Editor files
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.swp
+*.iml
+**/*.iml
+
+# Gradle & Android build files
+.gradle/
+**/.gradle/
+build/
+**/build/
+android-student-client/local.properties
+**/local.properties
+
+# Frontend build output
+dist/
+**/dist/
