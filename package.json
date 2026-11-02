@@ -7,7 +7,14 @@
     "start": "node server.js",
     "dev": "npm run dev --prefix student-client",
     "build:client": "npm run build --prefix student-client",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test --prefix api-gateway && npm run test --prefix user-service && npm run test --prefix product-service && npm run test --prefix order-service",
+    "test:gateway": "npm run test --prefix api-gateway",
+    "test:user": "npm run test --prefix user-service",
+    "test:product": "npm run test --prefix product-service",
+    "test:order": "npm run test --prefix order-service",
+    "test:k8s": "node scripts/validate-k8s.js",
+    "test:gateway:live": "node scripts/test-gateway.js",
+    "traffic": "node scripts/generate-traffic.js"
   },
   "keywords": [],
   "author": "",
