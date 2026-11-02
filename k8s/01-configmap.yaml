@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: lab8
+  labels:
+    app.kubernetes.io/part-of: campusconnect-system
+data:
+  PORT_GATEWAY: "3000"
+  PORT_USER: "3001"
+  PORT_PRODUCT: "3002"
+  PORT_ORDER: "3003"
+  # Service discovery via Kubernetes internal cluster DNS names (avoiding hardcoded Pod IPs)
+  USER_SERVICE_URL: "http://user-service.lab8.svc.cluster.local:3001"
+  PRODUCT_SERVICE_URL: "http://product-service.lab8.svc.cluster.local:3002"
+  ORDER_SERVICE_URL: "http://order-service.lab8.svc.cluster.local:3003"

@@ -5,6 +5,9 @@ node_modules/
 # Environment & Secrets
 .env
 **/.env
+k8s/02-secrets.yaml
+**/02-secrets.yaml
+*.tar
 .DS_Store
 *.log
 logs/

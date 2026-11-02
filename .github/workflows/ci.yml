@@ -20,10 +20,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22 (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
@@ -39,7 +39,7 @@ jobs:
           npm ci --prefix product-service
           npm ci --prefix order-service
 
-      - name: Run Syntax & Smoke Tests
+      - name: Run Microservices Tests
         run: |
           npm test
 
@@ -50,14 +50,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22 (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Validate YAML Manifests
         run: |
-          npm install yaml
+          npm ci --ignore-scripts
           node scripts/validate-k8s.js
 
       - name: Create local kind cluster for dry-run schema validation
@@ -67,6 +67,7 @@ jobs:
 
       - name: Validate Manifests against Kubernetes Cluster API
         run: |
+          kubectl apply -f k8s/00-namespace.yaml
           kubectl apply --dry-run=client -f k8s/00-namespace.yaml
           kubectl apply --dry-run=client -f k8s/01-configmap.yaml
           kubectl apply --dry-run=client -f k8s/02-secrets.yaml.example
@@ -136,7 +137,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy-rollout:
-    name: Safe Kubernetes Deployment Rollout
+    name: Documented Rollout & Rollback Verification
     needs: build-and-push
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -144,7 +145,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Safe Rollout Documentation / Execution Step
+      - name: Verify Rollout Commands & Target Tags
         run: |
           echo "=========================================================="
           echo "New images published successfully for commit ${{ github.sha }}:"

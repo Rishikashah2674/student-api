@@ -3,11 +3,53 @@ const express = require("express");
 const cors = require("cors");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const config = require("./config");
+const client = require("prom-client");
+
+// Collect default Node.js runtime metrics
+client.collectDefaultMetrics({ prefix: "gateway_" });
+
+// Custom Prometheus HTTP metrics
+const httpRequestCounter = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests received",
+  labelNames: ["method", "route", "status_code"]
+});
+
+const httpRequestDurationSeconds = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5]
+});
 
 const app = express();
 
 // Enable CORS
 app.use(cors());
+
+// Prometheus metrics recording middleware
+app.use((req, res, next) => {
+  if (req.path === "/metrics") {
+    return next();
+  }
+  const end = httpRequestDurationSeconds.startTimer();
+  res.on("finish", () => {
+    let route = req.path;
+    if (route.startsWith("/users")) route = "/users";
+    else if (route.startsWith("/products")) route = "/products";
+    else if (route.startsWith("/orders")) route = "/orders";
+    else if (route === "/health") route = "/health";
+
+    const labels = {
+      method: req.method,
+      route: route,
+      status_code: res.statusCode
+    };
+    httpRequestCounter.inc(labels);
+    end(labels);
+  });
+  next();
+});
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -43,6 +85,16 @@ app.get("/health", (req, res) => {
       orders: config.services.order.url
     }
   });
+});
+
+// GET /metrics - Prometheus metrics scraping endpoint
+app.get("/metrics", async (req, res) => {
+  try {
+    res.set("Content-Type", client.register.contentType);
+    res.end(await client.register.metrics());
+  } catch (err) {
+    res.status(500).end(err.message);
+  }
 });
 
 // Error handler for proxy routing failures
@@ -86,11 +138,15 @@ app.use((req, res) => {
 });
 
 // Start Gateway server
-app.listen(config.port, "0.0.0.0", () => {
-  console.log(`==================================================`);
-  console.log(`🚀 API Gateway running on http://0.0.0.0:${config.port}`);
-  console.log(`📍 User Service Route    -> ${config.services.user.path} -> ${config.services.user.url}`);
-  console.log(`📍 Product Service Route -> ${config.services.product.path} -> ${config.services.product.url}`);
-  console.log(`📍 Order Service Route   -> ${config.services.order.path} -> ${config.services.order.url}`);
-  console.log(`==================================================`);
-});
+if (require.main === module) {
+  app.listen(config.port, "0.0.0.0", () => {
+    console.log(`==================================================`);
+    console.log(`🚀 API Gateway running on http://0.0.0.0:${config.port}`);
+    console.log(`📍 User Service Route    -> ${config.services.user.path} -> ${config.services.user.url}`);
+    console.log(`📍 Product Service Route -> ${config.services.product.path} -> ${config.services.product.url}`);
+    console.log(`📍 Order Service Route   -> ${config.services.order.path} -> ${config.services.order.url}`);
+    console.log(`==================================================`);
+  });
+}
+
+module.exports = app;

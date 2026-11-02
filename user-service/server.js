@@ -3,11 +3,53 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./models/User");
+const client = require("prom-client");
+
+// Collect default Node.js runtime metrics
+client.collectDefaultMetrics({ prefix: "user_service_" });
+
+// Custom Prometheus HTTP metrics
+const httpRequestCounter = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests received",
+  labelNames: ["method", "route", "status_code"]
+});
+
+const httpRequestDurationSeconds = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5]
+});
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Prometheus metrics recording middleware
+app.use((req, res, next) => {
+  if (req.path === "/metrics") {
+    return next();
+  }
+  const end = httpRequestDurationSeconds.startTimer();
+  res.on("finish", () => {
+    let route = req.path;
+    if (route.startsWith("/users/")) route = "/users/:id";
+    else if (route === "/users") route = "/users";
+    else if (route === "/health") route = "/health";
+    else if (route === "/") route = "/";
+
+    const labels = {
+      method: req.method,
+      route: route,
+      status_code: res.statusCode
+    };
+    httpRequestCounter.inc(labels);
+    end(labels);
+  });
+  next();
+});
 
 const PORT = process.env.PORT || process.env.USER_SERVICE_PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/user_db";
@@ -24,9 +66,30 @@ function parseUserId(id) {
   return id;
 }
 
-// Health check endpoint
+// Health check endpoints
 app.get("/", (req, res) => {
   res.json({ service: "User Service", status: "running", port: PORT });
+});
+
+app.get("/health", (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.status(isDbConnected ? 200 : 503).json({
+    status: isDbConnected ? "UP" : "DEGRADED",
+    service: "User Service",
+    port: PORT,
+    database: isDbConnected ? "connected" : "disconnected",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// GET /metrics - Prometheus metrics scraping endpoint
+app.get("/metrics", async (req, res) => {
+  try {
+    res.set("Content-Type", client.register.contentType);
+    res.end(await client.register.metrics());
+  } catch (err) {
+    res.status(500).end(err.message);
+  }
 });
 
 // GET /users - Retrieve all users
@@ -158,4 +221,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, parseUserId, startServer };
